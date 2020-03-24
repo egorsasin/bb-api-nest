@@ -1,12 +1,17 @@
 import { Controller, Body, Post, HttpException, HttpStatus, Get } from '@nestjs/common';
-import { userDto } from './dto/user.dto';
+
+import { UserDto } from '../users/dto/user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {
 
   constructor(
     private authService: AuthService,
+    private userService: UsersService
   ) {}
 
   @Get()
@@ -16,12 +21,17 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body() body: userDto
+    @Body() createUserDto: CreateUserDto
   ) {
-    // try {
-    //   const newUser = new UserDto(await this.userService.createNewUser(createUserDto));
-    // const result = await this.authService.register('79817995786');
-    // console.log(result);
+    try {
+      const newUser = new UserDto(await this.userService.createUser(createUserDto));
+      await this.authService.createSmsToken(newUser.phone);
+      const smsStatus = await this.authService.sendSmsToken(createUserDto.phone);
+      if (smsStatus.error) {}
+      
+    } catch {
+      console.log('Error');
+    }
   }
 
 }
