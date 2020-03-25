@@ -7,7 +7,7 @@ export const PhoneVerificationSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  phoneToken: {
+  token: {
     type: String,
     required: true,
   },

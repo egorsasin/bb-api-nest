@@ -20,17 +20,26 @@ export class AuthService {
   async sendSmsToken(phone: string) {
 
     var model = await this.phoneVerification.findOne({ phone: phone });
-
+ 
     if (model && model.token) {
     
-      const apiKey = this.configService.get('SMSPILOT_TOKEN');
-      const from = 'INFORM';
-      const text = `Код подтверждения`;
-      
-      const url = `${ SMS_API_URL }?send=${ text }&to=${ phone }&from=${ from }&apikey=${ apiKey }&format=json`;
+      const params = {
+        to: phone,
+        from: 'INFORM',
+        send: `Код подтверждения ${ model.token }`,
+        apikey: this.configService.get('SMSPILOT_TOKEN'),
+        format: 'json'
+      }
 
-      return this.httpService.get(url)
-        .pipe(map(res => res.data)).toPromise();
+      const result =  await this.httpService.get(SMS_API_URL, { params })
+        .pipe(
+          map(res => res.data)
+        )
+        .toPromise()
+        .then(data => !!data.send)
+        .catch(error => error);
+
+      return result;  
     
     } else { 
       throw new HttpException('REGISTER.USER_NOT_REGISTERED', HttpStatus.FORBIDDEN);

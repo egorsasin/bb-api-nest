@@ -1,4 +1,4 @@
-import { Controller, Body, Post, HttpException, HttpStatus, Get } from '@nestjs/common';
+import { Controller, Body, Post, HttpException, HttpStatus, Get, Res, Param } from '@nestjs/common';
 
 import { UserDto } from '../users/dto/user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -14,24 +14,31 @@ export class AuthController {
     private userService: UsersService
   ) {}
 
-  @Get()
-  getHello(): string {
-    return 'Auth service';
+  @Get('verify/:token')
+  public async verifyPhone(@Param() params): Promise<any> {
+    try {
+      //var phoneVerified = await this.authService.verifyPhone(params.token);
+      //return new ResponseSuccess("LOGIN.PHONE_VERIFIED", phoneVerified);
+    } catch(error) {
+      //return new ResponseError("LOGIN.ERROR", error);
+    }
   }
 
   @Post('register')
   async register(
-    @Body() createUserDto: CreateUserDto
+    @Body() createUserDto: CreateUserDto, @Res() res
   ) {
-    try {
-      const newUser = new UserDto(await this.userService.createUser(createUserDto));
-      await this.authService.createSmsToken(newUser.phone);
-      const smsStatus = await this.authService.sendSmsToken(createUserDto.phone);
-      if (smsStatus.error) {}
-      
-    } catch {
-      console.log('Error');
+
+    const newUser = new UserDto(await this.userService.createUser(createUserDto));
+    await this.authService.createSmsToken(createUserDto.phone);
+    const messageSent = await this.authService.sendSmsToken(createUserDto.phone);
+    
+    if (messageSent) {
+      return res.status(HttpStatus.OK).json({ msg: 'REGISTRATION.USER_REGISTERED_SUCCESSFULLY' });
+    } else {
+      throw new HttpException("REGISTRATION.ERROR.SMS_NOT_SENT", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
   }
 
 }
