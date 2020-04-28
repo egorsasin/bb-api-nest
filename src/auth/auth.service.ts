@@ -69,7 +69,7 @@ export class AuthService {
       const params = {
         to: phone,
         from: 'INFORM',
-        send: `Код подтверждения ${ model.token }`,
+        send: `Confirmation code ${ model.token }`,
         apikey: this.configService.get('SMSPILOT_TOKEN'),
         format: 'json'
       }
