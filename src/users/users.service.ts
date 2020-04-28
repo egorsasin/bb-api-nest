@@ -13,11 +13,11 @@ export class UsersService {
     @InjectModel('User') private readonly userModel: Model<User>
   ) {}
 
-  async findByPhone(phone: string): Promise<User> { 
+  public async findByPhone(phone: string): Promise<User> { 
     return await this.userModel.findOne({ phone: phone });
   }
 
-  async createUser(newUserDTO: UserDto): Promise<User> {
+  public async createUser(newUserDTO: UserDto): Promise<User> {
 
     if(this.isPhoneValid(newUserDTO.phone)) { 
 

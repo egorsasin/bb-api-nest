@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
 import { ConfigReader } from 'neconfig';
 
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { bodyParser: false });
@@ -18,6 +20,8 @@ async function bootstrap() {
 
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true }));
   app.use(bodyParser.json({ verify: rawBodyBuffer }));
+
+  app.useGlobalFilters(new HttpExceptionFilter);
 
   const config = app.get(ConfigReader);
   const port = config.getIntOrThrow('PORT');
