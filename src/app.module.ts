@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { NeconfigModule } from 'neconfig';
 import { MongooseModule } from '@nestjs/mongoose';
+import { NestSessionOptions, SessionModule } from 'nestjs-session';
 
 import * as path from 'path';
 
@@ -17,9 +18,10 @@ import { AuthModule } from './auth/auth.module';
       readers: [
         { name: 'env', file: path.resolve(process.cwd(), '.env') }
       ]
-    }),
+    }),            
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ ConfigModule ],
+      inject: [ConfigService], 
       useFactory: (configService: ConfigService) => {
         return {
           uri: configService.get('MONGODB_URI'),
@@ -28,7 +30,19 @@ import { AuthModule } from './auth/auth.module';
           useNewUrlParser: true,
         }
       },
+    }),
+    SessionModule.forRootAsync({
+      imports: [ ConfigModule ],
       inject: [ConfigService], 
+      useFactory: (configService: ConfigService) => {
+        return {
+          session: {
+            secret: configService.get('SESSION_SECRET'),
+            resave: true,
+            saveUninitialized: false,
+          }
+        }
+      }
     }),
     AuthModule,
   ],

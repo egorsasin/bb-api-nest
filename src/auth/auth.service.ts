@@ -7,7 +7,7 @@ import { ConfigService } from '../config/config.service';
 
 import { PhoneVerification } from './interfaces/phone-verification.interface';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UsersService } from 'src/users/users.service';
+//import { UsersService } from 'src/users/users.service';
 import { VerifyPhoneDto } from './dto/verify-phone.dto';
 
 const SMS_API_URL = 'http://smspilot.ru/api.php';
@@ -17,7 +17,7 @@ export class AuthService {
 
   constructor(
     private configService: ConfigService,
-    private userService: UsersService,
+    //private userService: UsersService,
     private httpService: HttpService,
     @InjectModel('PhoneVerification') private readonly phoneVerification: Model<PhoneVerification>
   ) { }
@@ -25,13 +25,13 @@ export class AuthService {
   public async validateUserByPassword(
     credentials: CreateUserDto
   ): Promise<any> {
-    const user: any = await this.userService.findByPhone(credentials.phone);
-    if (!user) {
-      throw new HttpException('LOGIN.USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-    }
-    if (!user.auth.phone.valid) {
-      throw new HttpException('LOGIN.EMAIL_NOT_VERIFIED', HttpStatus.FORBIDDEN);
-    }
+    //const user: any = await this.userService.findByPhone(credentials.phone);
+    //if (!user) {
+      //throw new HttpException('LOGIN.USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    //}
+    ////if (!user.auth.phone.valid) {
+      //throw new HttpException('LOGIN.EMAIL_NOT_VERIFIED', HttpStatus.FORBIDDEN);
+    //}
   }
 
   async verifyPhone(phoneDto: VerifyPhoneDto, token: string) {
@@ -44,16 +44,16 @@ export class AuthService {
         throw new HttpException('REGISTRATION.PHONE_TOKEN_EXPIRED', HttpStatus.FORBIDDEN);
       }
 
-      const user = await this.userService.findByPhone(phoneDto.ticket);
+      // const user = await this.userService.findByPhone(phoneDto.ticket);
 
-      if(user) {
-        user.verified = true;
-        const savedUser = await user.save();
-        await phoneVerification.remove();
+      // if(user) {
+      //   user.verified = true;
+      //   const savedUser = await user.save();
+      //   await phoneVerification.remove();
         return true;
-      } else {
-        throw new HttpException('REGISTRATION.USER_NOT_FOUND', HttpStatus.FORBIDDEN);
-      }
+      // } else {
+      //   throw new HttpException('REGISTRATION.USER_NOT_FOUND', HttpStatus.FORBIDDEN);
+      // }
 
     } else {
       throw new HttpException('REGISTRATION.PHONE_TOKEN_NOT_VALID', HttpStatus.FORBIDDEN);

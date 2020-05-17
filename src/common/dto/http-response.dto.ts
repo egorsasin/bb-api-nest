@@ -12,3 +12,18 @@ export class HttpSuccess implements HttpResponse{
     this.payload = payload;
   }
 }
+
+export class ResponseError implements HttpResponse{
+  
+  constructor (message:string, data?: any) {
+    this.success = false;
+    this.message = message;
+    this.payload = data;
+    console.warn(new Date().toString() + ' - [Response]: ' + message + (data ? ' - ' + JSON.stringify(data): ''));
+  };
+
+  message: string;
+  payload: any[];
+  error: any;
+  success: boolean;
+}

@@ -6,7 +6,8 @@ export class ConfigService {
   private readonly config: { [name: string]: string }
   
   constructor() {
-    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+    if (
+      process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
       this.config = {
         SMSPILOT_TOKEN: process.env.SMSPILOT_TOKEN
       }
